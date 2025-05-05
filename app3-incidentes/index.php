@@ -7,6 +7,35 @@
 </head>
 <body>
 <div class="container mt-5">
+<?php
+session_start();
+
+// Simulación de un proceso de autenticación: en un escenario real, validarías contra una BDD.
+if (isset($_POST['login'])) {
+    // Estas son las "credenciales" de ejemplo
+    $users = [
+        'usuario'    => ['password' => 'user123',    'role' => 'usuario'],
+        'tecnico'    => ['password' => 'tech123',    'role' => 'tecnico'],
+        'supervisor' => ['password' => 'super123',   'role' => 'supervisor']
+    ];
+
+    $username = trim($_POST['username'] ?? '');
+    $password = trim($_POST['password'] ?? '');
+
+    if (isset($users[$username]) && $users[$username]['password'] === $password) {
+        // Se guarda la información del usuario en la sesión
+        $_SESSION['user'] = [
+            'username' => $username,
+            'role'     => $users[$username]['role']
+        ];
+        // Redirecciona para evitar reenvío del form
+        header("Location: index.php");
+        exit();
+    } else {
+        $error = "Credenciales no válidas.";
+    }
+}
+?>
     <?php if (!isset($_SESSION['user'])): ?>
         <!-- Vista de login -->
         <h2>Iniciar Sesión</h2>
@@ -66,39 +95,11 @@
         </nav>
         
         <div class="mt-4">
-            <p>Aquí se mostrará la información o contenido relacionado a cada sección según el rol seleccionado.</p>
+            <p>No hay incidentes que mostrar</p>
         </div>
     <?php endif; ?>
 </div>
 </body>
 </html>
 
-<?php
-session_start();
 
-// Simulación de un proceso de autenticación: en un escenario real, validarías contra una BDD.
-if (isset($_POST['login'])) {
-    // Estas son las "credenciales" de ejemplo
-    $users = [
-        'usuario'    => ['password' => 'user123',    'role' => 'usuario'],
-        'tecnico'    => ['password' => 'tech123',    'role' => 'tecnico'],
-        'supervisor' => ['password' => 'super123',   'role' => 'supervisor']
-    ];
-
-    $username = trim($_POST['username'] ?? '');
-    $password = trim($_POST['password'] ?? '');
-
-    if (isset($users[$username]) && $users[$username]['password'] === $password) {
-        // Se guarda la información del usuario en la sesión
-        $_SESSION['user'] = [
-            'username' => $username,
-            'role'     => $users[$username]['role']
-        ];
-        // Redirecciona para evitar reenvío del form
-        header("Location: index.php");
-        exit();
-    } else {
-        $error = "Credenciales no válidas.";
-    }
-}
-?>
